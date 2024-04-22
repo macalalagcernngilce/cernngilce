@@ -1,136 +1,99 @@
-<?php
+<?php   
     include "conn.php";
     session_start();
 
-    if(isset($_POST['reg_button'])){
+    //Registration
+    if(isset($_POST['register'])){
 
-        $name=$_POST['nm'];
-        $email=$_POST['email'];
-        $password=$_POST['pass'];
-        $phone_number=$_POST['pn'];
+        $fname = $_POST['fname'];
+        $lname = $_POST['lname'];
+        $year = $_POST['year'];
+        $course = $_POST['course'];
+        $email = $_POST['email'];
+        $pass = $_POST['pass'];
 
+        $validate = mysqli_query($conn, "INSERT INTO register VALUES('0','$fname','$lname','$year','$course','$email','$pass')");
 
-        $insertusers = mysqli_query($conn, "INSERT INTO users
-        VALUES('0','$name','$email','$password','$phone_number')");
+        if($validate == TRUE){
+            ?>
+            <script>
+                alert ("Registered");
+                location.href = "index.html";
+            </script>
+            <?php
+        }else{
+            ?>
+            <script>
+                alert ("Not Registered");
+                location.href = "index.html";
+            </script>
+            <?php
+        }
 
-        if($insertusers == true){
+    }
+
+    //End
+
+    //Login Admin
+
+  if(isset($_POST['admin'])){
+
+    $admin_email = $_POST['admin_email'];
+    $admin_pass = $_POST['admin_pass'];
+
+    $check = mysqli_query($conn, "SELECT * FROM admin_info WHERE admin_email = '$admin_email' AND admin_pass ='$admin_pass'");
+    $row = mysqli_num_rows($check);
+
+    $_SESSION ['admin_email'] = "$admin_email";
+    $_SESSION ['admin_pass'] = "$admin_pass";
+    if($row >= 0){
         ?>
-<script>
-alert("Your registration was successful!");
-window.location.href = "index.php";
-</script>
-<?php
-        
-        } else {
-            ?>
-<script>
-alert("Error registration! Try again!");
-window.location.href = "reg.php";
-</script>
-<?php
+        <script>
+            alert ("Login Successfully!");
+            location.href = "./Admin_sse/index.html";
+        </script>
+        <?php
+    }else{
+        ?>
+        <script>
+            alert ("Error Login!");
+            location.href = "index.html";
+        </script>
+        <?php
 
-        }
-                    
-        }
+  }
 
+  }
+  
+  //Login as user
 
-    if(isset($_POST['login'])){
-        
-        $email=$_POST['login_email'];
-        
-        $pass=$_POST['login_pass'];
+  if(isset($_POST['user'])){
 
-        
-        $check=mysqli_query($conn, "SELECT * FROM users WHERE email= '$email' AND password= '$password'");
+    $email = $_POST['email'];
+    $pass = $_POST['pass'];
 
-        $num=mysqli_num_rows($check);
+    $check = mysqli_query($conn, "SELECT * FROM register WHERE email = '$email' AND pass ='$pass'");
+    $row = mysqli_num_rows($check);
 
+    $_SESSION ['email'] = "$email";
+    $_SESSION ['pass'] = "$pass";
+    if($row >= 0){
+        ?>
+        <script>
+            alert ("Login Successfully!");
+            location.href = "./iPortfolio/index.html";
+        </script>
+        <?php
+    }else{
+        ?>
+        <script>
+            alert ("Error Login!");
+            location.href = "index.html";
+        </script>
+        <?php
 
-        if($num >=0){
-
-            $_SESSION['email'] = $email;
-            ?>
-
-<script>
-alert("Account Accepted! Welcome Users!");
-window.location.href = "userhome.php";
-</script>
-<?php
-
-        }else{
-            ?>
-<script>
-alert("Email or Password not Found!");
-window.location.href = "index.php";
-</script>
-<?php
-
-
-
-        }
-    }
-
-    if(isset($_POST['update_account'])){
-
-        $id = $_GET['id'];
-
-        $upname = $_POST['up_name'];
-        $upemail = $_POST['up_email'];
-        $uppass = $_POST['up_pass'];
-        $uppn = $_POST['up_pn'];
-
-        $updateaccount=mysqli_query($conn, "UPDATE users SET name= '$upname',
-        email= '$upemail', password= '$uppass', phone_number= '$uppn' WHERE id= '$id'");
-
-        if($updateaccount==true){
-            ?>
-<script>
-alert("Data was changed!")
-window.location.href = "userhome.php";
-</script>
-<?php
-        }else{
-            ?>
-<script>
-alert("Data was not changed!")
-window.location.href = "update_profile.php";
-</script>
-<?php
-        }
-
-    }
-
-    if(isset($_POST['create_post'])){
-
-        $title =  $_POST['title'];
-        $date = $_POST['mydate'];
-        $desc = $_POST['desc']; 
-        $posted_by = $_POST['posted_by'];
-
-        $insertpost =  mysqli_query($conn, "INSERT INTO post VALUES('0','$title','$date','$desc','$posted_by')");
-
-        if($insertpost==true){
-            
-            ?>
-<script>
-alert("Post was inserted in the database!");
-window.location.href = "userhome.php";
-</script>
-<?php
-
-        }else{
-            
-            ?>
-<script>
-alert("Error in Posting!");
-window.location.href = "createpost.php";
-</script>
-<?php
-
-        }
-    
-    }
-
-
-
+  }
+  }
+  
 ?>
+
